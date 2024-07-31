@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paint Color Explorer</title>
     <style>
+        /* Define custom CSS variables for light and dark mode */
         :root {
             --background-color: #ffffff;
             --text-color: #333333;
@@ -14,6 +15,7 @@
             --link-visited: #551a8b;
         }
 
+        /* Dark mode custom CSS variables */
         body.dark-mode {
             --background-color: #222222;
             --text-color: #e0e0e0;
@@ -23,6 +25,7 @@
             --link-visited: #b19cd9;
         }
 
+        /* Apply custom variables to elements */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -39,6 +42,7 @@
             margin-bottom: 30px;
         }
 
+        /* Dark mode toggle button */
         #toggle-dark-mode {
             position: absolute;
             top: 20px;
@@ -56,6 +60,7 @@
             opacity: 0.8;
         }
 
+        /* Container for label style selection */
         #label-style-container {
             display: flex;
             flex-wrap: wrap;
@@ -64,6 +69,7 @@
             margin-bottom: 20px;
         }
 
+        /* Style for each label */
         #label-style-container label {
             background-color: var(--box-background);
             padding: 5px 10px;
@@ -76,6 +82,7 @@
             opacity: 0.8;
         }
 
+        /* Search bar styling */
         #search-container {
             text-align: center;
             margin-bottom: 20px;
@@ -90,12 +97,14 @@
             font-size: 16px;
         }
 
+        /* Color items container */
         #color-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
 
+        /* Each color item */
         .color-item {
             background-color: var(--box-background);
             border: 1px solid var(--box-border);
@@ -116,6 +125,7 @@
             border-radius: 5px;
         }
 
+        /* Link styling */
         a {
             color: var(--link-color);
             text-decoration: none;
@@ -129,6 +139,7 @@
             text-decoration: underline;
         }
 
+        /* Popup overlay for color details */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -163,10 +174,19 @@
     </style>
 </head>
 <body>
+    <!-- Button to toggle dark mode -->
     <button id="toggle-dark-mode">Toggle Dark Mode</button>
 
     <h1>Paint Color Explorer</h1>
-    <p style="text-align: center;">Created based on the information provided by <a href="https://www.dakkadakka.com/wiki/en/Paint_Range_Compatibility_Chart" target="_blank">Dakka Dakka</a>. I did not find the spreadsheet easy to read, so this page is intended to help painters find alternative colors to common Citadel paints more easily. Color values, HEX values, and equivalent color recommendations are approximations and represent similarity rather than 1-to-1 replacements. Be sure to check any paint itself before using. Not all colors are present/the list is not exhaustive. If you'd like to contribute, please see <a href="https://github.com/krones9000/PaintRangeCompatibility" target="_blank">the Github</a>.</p>
+    <p style="text-align: center;">
+        Created based on the information provided by 
+        <a href="https://www.dakkadakka.com/wiki/en/Paint_Range_Compatibility_Chart" target="_blank">Dakka Dakka</a>. 
+        I did not find the spreadsheet easy to read, so this page is intended to help painters find alternative colors to common Citadel paints more easily. 
+        Color values, HEX values, and equivalent color recommendations are approximations and represent similarity rather than 1-to-1 replacements. 
+        Be sure to check any paint itself before using. Not all colors are present/the list is not exhaustive. 
+        If you'd like to contribute, please see 
+        <a href="https://github.com/krones9000/PaintRangeCompatibility" target="_blank">the Github</a>.
+    </p>
 
     <!-- Dropdown for selecting label style -->
     <div id="label-style-container">
@@ -203,6 +223,7 @@
             <div id="popup-details"></div>
         </div>
     </div>
+
 
     <script>
         // Sample data (replace with your full dataset)
@@ -2182,10 +2203,12 @@
         // Track the current label style
         let currentLabelStyle = 'newCitadel';
 
-function createColorItems() {
+        // Create color items and display them
+        function createColorItems() {
             const colorList = document.getElementById('color-list');
             colorList.innerHTML = ''; 
 
+            // Sort colors alphabetically by current label style
             paintData.sort((a, b) => {
                 const nameA = (a.newCitadel || '').toLowerCase();
                 const nameB = (b.newCitadel || '').toLowerCase();
@@ -2194,6 +2217,7 @@ function createColorItems() {
                 return 0;
             });
 
+            // Create a color item for each paint
             paintData.forEach(paint => {
                 const colorItem = document.createElement('div');
                 colorItem.className = 'color-item';
@@ -2206,6 +2230,7 @@ function createColorItems() {
             });
         }
 
+        // Show color details in a popup
         function showColorDetails(paint) {
             const popupOverlay = document.getElementById('popup-overlay');
             const popupDetails = document.getElementById('popup-details');
@@ -2229,6 +2254,7 @@ function createColorItems() {
             popupOverlay.style.display = 'block';
         }
 
+        // Filter colors based on search input
         function filterColors() {
             const searchInput = document.getElementById('color-search');
             const filter = searchInput.value.toLowerCase();
@@ -2238,13 +2264,14 @@ function createColorItems() {
             for (let i = 0; i < colorItems.length; i++) {
                 const colorName = colorItems[i].textContent || colorItems[i].innerText;
                 if (colorName.toLowerCase().indexOf(filter) > -1) {
-                    colorItems[i].style.display = "\u00a0";
+                    colorItems[i].style.display = "";
                 } else {
                     colorItems[i].style.display = "none";
                 }
             }
         }
 
+        // Event listeners
         document.getElementById('color-search').addEventListener('input', filterColors);
 
         document.getElementById('label-style').addEventListener('change', function() {
