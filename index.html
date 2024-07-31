@@ -5,71 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paint Color Explorer</title>
     <style>
+        :root {
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --box-background: #f0f0f0;
+            --box-border: #cccccc;
+            --link-color: #0066cc;
+            --link-visited: #551a8b;
+        }
+
+        body.dark-mode {
+            --background-color: #222222;
+            --text-color: #e0e0e0;
+            --box-background: #333333;
+            --box-border: #555555;
+            --link-color: #4da6ff;
+            --link-visited: #b19cd9;
+        }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            transition: all 0.3s ease;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body.dark-mode {
-            background-color: #333;
-            color: #f4f4f4;
         }
 
         h1 {
+            color: var(--text-color);
             text-align: center;
-            color: #333;
+            margin-bottom: 30px;
         }
-        h1.dark-mode {
-            color: #f4f4f4;
+
+        #toggle-dark-mode {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: var(--box-background);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #toggle-dark-mode:hover {
+            opacity: 0.8;
+        }
+
+        #label-style-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #label-style-container label {
+            background-color: var(--box-background);
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #label-style-container label:hover {
+            opacity: 0.8;
         }
 
         #search-container {
             text-align: center;
             margin-bottom: 20px;
         }
-        #color-search {
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
-        }
 
-        #label-style-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #label-style {
-            padding: 5px;
+        #search-container input {
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid var(--box-border);
+            border-radius: 5px;
             font-size: 16px;
         }
 
         #color-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
         }
 
         .color-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: var(--box-background);
+            border: 1px solid var(--box-border);
             border-radius: 5px;
-            padding: 10px;
-            width: 200px;
+            padding: 15px;
             text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
         }
+
         .color-item:hover {
             transform: scale(1.05);
         }
+
         .color-sample {
             width: 100%;
-            height: 50px;
+            height: 100px;
             margin-bottom: 10px;
-            border: 1px solid #000;
+            border-radius: 5px;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: var(--link-visited);
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
 
         .popup-overlay {
@@ -79,55 +136,35 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
         }
+
         .popup-content {
-            position: relative;
-            background-color: #fff;
-            margin: 15% auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--background-color);
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-        }
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close-btn:hover,
-        .close-btn:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
+            border-radius: 5px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
         }
 
-        #dark-mode-toggle {
-            position: fixed;
+        .close-btn {
+            position: absolute;
             top: 10px;
             right: 10px;
-            padding: 10px;
+            font-size: 24px;
             cursor: pointer;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-        }
-
-        #dark-mode-toggle.dark-mode {
-            background-color: #f4f4f4;
-            color: #333;
         }
     </style>
 </head>
 <body>
-    <!-- Dark mode toggle button -->
-    <button id="dark-mode-toggle">Toggle Dark Mode</button>
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>
 
-    <!-- Main heading -->
     <h1>Paint Color Explorer</h1>
     <p style="text-align: center;">Created based on the information provided by <a href="https://www.dakkadakka.com/wiki/en/Paint_Range_Compatibility_Chart" target="_blank">Dakka Dakka</a>. Color values, HEX values, and equivalent color recommendations are approximations and represent similarity rather than 1-to-1 replacements. Be sure to check any paint itself before using. Not all colors are present. If you'd like to contribute, please see <a href="https://github.com/krones9000/PaintRangeCompatibility" target="_blank">the Github</a>.</p>
 
@@ -2140,7 +2177,7 @@
     }
 
             // ... (other color data)
-        ]
+        ];
 
         // Track the current label style
         let currentLabelStyle = 'newCitadel';
@@ -2227,48 +2264,17 @@ function createColorItems() {
             }
         });
 
-        document.getElementById('dark-mode-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            this.classList.toggle('dark-mode');
-        });
-
         createColorItems();
+        
+        // Dark mode toggle
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
     </script>
     <p style="text-align: left; margin-top: 20px;">This table has been compiled based on the Dakka Dakka page here:
         <a href="https://www.dakkadakka.com/wiki/en/Paint_Range_Compatibility_Chart" target="_blank">https://www.dakkadakka.com/wiki/en/Paint_Range_Compatibility_Chart</a> using data from the following sources:<div>
     </div>
         <a href="http://home.att.net/~katamaran/vallejo.html" target="_blank">http://home.att.net/~katamaran/vallejo.html</a>
-        <div>
-    </div>
-        <a href="http://myminiaturepainting.com/conversion/citadelgame.html" target="_blank">http://myminiaturepainting.com/conversion/citadelgame.html</a><div>
-    </div>
-        <a href="http://www.nugaming.com/html/vallejo_paints.html#CitadelVallajoConversionTable" target="_blank">http://www.nugaming.com/html/vallejo_paints.html#CitadelVallajoConversionTable</a><div>
-    </div>
-        <a href="http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_carta.asp?p1=ing&p2=modelcolor&p3=1&p4=0" target="_blank">http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_carta.asp?p1=ing&p2=modelcolor&p3=1&p4=0</a><div>
-    </div>
-        <a href="http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_info.asp?p1=ing&p2=modelcolor&p3=1#modelcolorinfo" target="_blank">http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_info.asp?p1=ing&p2=modelcolor&p3=1#modelcolorinfo</a><div>
-    </div>
-        <a href="http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_carta.asp?p1=ing&p2=gamecolor" target="_blank">http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_carta.asp?p1=ing&p2=gamecolor</a><div>
-    </div>
-        <a href="http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_info.asp?p1=ing&p2=gamecolor&p3=1#gamecolorinfo" target="_blank">http://www.ttfxmedia.com/vallejo/cgi-bin/_modelis_info.asp?p1=ing&p2=gamecolor&p3=1#gamecolorinfo</a><div>
-    </div>
-        <a href="http://uk.games-workshop.com/storefront/store.uk?do=List_Models&code=300952&orignav=300810" target="_blank">http://uk.games-workshop.com/storefront/store.uk?do=List_Models&code=300952&orignav=300810</a><div>
-    </div>
-        <a href="http://colors.silicon-dragons.com/full_line.php" target="_blank">http://colors.silicon-dragons.com/full_line.php</a><div>
-    </div>
-        <a href="http://www.balagan.org.uk/war/paint.htm" target="_blank">http://www.balagan.org.uk/war/paint.htm</a><div>
-    </div>
-        <a href="http://www.reapermini.com/forum/index.php?s=c770bc029dd218be5d17fff14fecefeb&showtopic=17678&st=0&p=266494&#entry266494" target="_blank">http://www.reapermini.com/forum/index.php?s=c770bc029dd218be5d17fff14fecefeb&showtopic=17678&st=0&p=266494&#entry266494</a><div>
-    </div>
-        <a href="http://www.dakkadakka.com/s/i/at/at2/2010/4/8/d08819ffe37e45c97ce2e5b4770e92a7_4435.jpeg" target="_blank">http://www.dakkadakka.com/s/i/at/at2/2010/4/8/d08819ffe37e45c97ce2e5b4770e92a7_4435.jpeg</a><div>
-    </div>
-        <a href="http://www.acrylicosvallejo.com/en_US/media/e588d28183cec31ffd6dcee6d3718fc3.cms/equivalencias-rev05.pdf" target="_blank">http://www.acrylicosvallejo.com/en_US/media/e588d28183cec31ffd6dcee6d3718fc3.cms/equivalencias-rev05.pdf</a><div>
-    </div>
-        <a href="https://shop.instarpaint.com" target="_blank">https://shop.instarpaint.com</a><div>
-    </div>
-        <a href="https://redgrimm.github.io/paint-conversion/p3.html" target="_blank">https://redgrimm.github.io/paint-conversion/p3.html</a><div>
-    </div>
-        <a href="https://convertingcolors.com/rgb-color-84_119_87.html" target="_blank">https://convertingcolors.com/rgb-color-84_119_87.html</a>
     </p>
 </body>
 </html>
